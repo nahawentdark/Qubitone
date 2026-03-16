@@ -1,1 +1,1261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Qubit_One — We help founders find the $10k–$100k processes worth automating. Process audit & automation systems built to high fidelity standards." />
+  <meta property="og:title" content="Qubit_One — High Fidelity. Or Nothing." />
+  <meta property="og:description" content="We help founders find the $10k–$100k processes worth automating. Free 30-min audit." />
+  <meta property="og:type" content="website" />
+  <title>Qubit_One — High Fidelity. Or Nothing.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Barlow:wght@300;400;500;600;700;800;900&family=Barlow+Condensed:wght@600;700;800;900&display=swap" rel="stylesheet" />
 
+  <style>
+    /* ═══════════════════════════════════════
+       TOKENS
+    ═══════════════════════════════════════ */
+    :root {
+      --black:   #080A08;
+      --black2:  #0E110E;
+      --black3:  #131613;
+      --green:   #00F5A0;
+      --green2:  #00C880;
+      --green-dim: rgba(0,245,160,0.08);
+      --green-border: rgba(0,245,160,0.18);
+      --white:   #F0F2EF;
+      --gray:    #5A6358;
+      --gray2:   #3A3F38;
+      --red:     #FF4545;
+
+      --font-display: 'Barlow Condensed', sans-serif;
+      --font-body:    'Barlow', sans-serif;
+      --font-mono:    'Space Mono', monospace;
+    }
+
+    /* ═══════════════════════════════════════
+       RESET + BASE
+    ═══════════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: 16px; }
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: var(--font-body);
+      line-height: 1.6;
+      overflow-x: hidden;
+      cursor: none;
+    }
+    a { color: inherit; text-decoration: none; }
+    img { max-width: 100%; display: block; }
+
+    /* ═══════════════════════════════════════
+       CUSTOM CURSOR
+    ═══════════════════════════════════════ */
+    .cursor {
+      position: fixed; top: 0; left: 0;
+      width: 10px; height: 10px;
+      background: var(--green);
+      border-radius: 50%;
+      pointer-events: none; z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: transform 0.08s, width 0.2s, height 0.2s, opacity 0.2s;
+      mix-blend-mode: difference;
+    }
+    .cursor-ring {
+      position: fixed; top: 0; left: 0;
+      width: 32px; height: 32px;
+      border: 1px solid var(--green);
+      border-radius: 50%;
+      pointer-events: none; z-index: 9998;
+      transform: translate(-50%, -50%);
+      transition: transform 0.18s ease, width 0.2s, height 0.2s, opacity 0.3s;
+      opacity: 0.5;
+    }
+    .cursor.hover  { width: 16px; height: 16px; }
+    .cursor-ring.hover { width: 48px; height: 48px; opacity: 0.2; }
+
+    /* ═══════════════════════════════════════
+       NOISE OVERLAY
+    ═══════════════════════════════════════ */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 1;
+      pointer-events: none;
+      opacity: 0.025;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 200px 200px;
+    }
+
+    /* ═══════════════════════════════════════
+       SCANLINE
+    ═══════════════════════════════════════ */
+    .scanline {
+      position: fixed; inset: 0; z-index: 2; pointer-events: none;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,0.04) 2px,
+        rgba(0,0,0,0.04) 4px
+      );
+    }
+
+    /* ═══════════════════════════════════════
+       GRID BG
+    ═══════════════════════════════════════ */
+    .grid-bg {
+      position: absolute; inset: 0; pointer-events: none; z-index: 0;
+      background-image:
+        linear-gradient(var(--green-border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--green-border) 1px, transparent 1px);
+      background-size: 60px 60px;
+      mask-image: radial-gradient(ellipse 80% 80% at 50% 0%, black 20%, transparent 100%);
+      opacity: 0.3;
+    }
+
+    /* ═══════════════════════════════════════
+       CORNER BRACKETS (brand element)
+    ═══════════════════════════════════════ */
+    .bracket {
+      position: absolute;
+      width: 16px; height: 16px;
+      pointer-events: none;
+    }
+    .bracket::before, .bracket::after {
+      content: '';
+      position: absolute;
+      background: var(--green);
+    }
+    .bracket::before { width: 100%; height: 1px; }
+    .bracket::after  { width: 1px; height: 100%; }
+    .bracket.tl { top: 0; left: 0; }
+    .bracket.tl::before { top: 0; left: 0; }
+    .bracket.tl::after  { top: 0; left: 0; }
+    .bracket.tr { top: 0; right: 0; }
+    .bracket.tr::before { top: 0; right: 0; }
+    .bracket.tr::after  { top: 0; right: 0; }
+    .bracket.bl { bottom: 0; left: 0; }
+    .bracket.bl::before { bottom: 0; left: 0; }
+    .bracket.bl::after  { bottom: 0; left: 0; }
+    .bracket.br { bottom: 0; right: 0; }
+    .bracket.br::before { bottom: 0; right: 0; }
+    .bracket.br::after  { bottom: 0; right: 0; }
+
+    /* ═══════════════════════════════════════
+       LAYOUT HELPERS
+    ═══════════════════════════════════════ */
+    .container { max-width: 1160px; margin: 0 auto; padding: 0 40px; }
+    .tag {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-family: var(--font-mono); font-size: 10px; letter-spacing: 2px;
+      color: var(--green); text-transform: uppercase;
+    }
+    .tag::before {
+      content: ''; display: block;
+      width: 20px; height: 1px; background: var(--green);
+    }
+    .rule { width: 100%; height: 1px; background: var(--gray2); margin: 0; }
+
+    /* ═══════════════════════════════════════
+       NAV
+    ═══════════════════════════════════════ */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 500;
+      border-bottom: 1px solid var(--gray2);
+      background: rgba(8,10,8,0.88);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+    .nav-inner {
+      display: flex; align-items: center; justify-content: space-between;
+      height: 60px;
+    }
+    .nav-logo {
+      font-family: var(--font-mono); font-size: 13px; font-weight: 700;
+      letter-spacing: 1px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .nav-logo .dot { color: var(--green); font-size: 18px; line-height: 1; }
+    .nav-logo .sub {
+      font-size: 9px; color: var(--gray);
+      letter-spacing: 2px; font-weight: 400;
+      border-left: 1px solid var(--gray2); padding-left: 10px; margin-left: 4px;
+    }
+    .nav-right { display: flex; align-items: center; gap: 32px; }
+    .nav-link {
+      font-family: var(--font-mono); font-size: 10px;
+      letter-spacing: 1.5px; color: var(--gray);
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .nav-link:hover { color: var(--white); }
+    .nav-cta {
+      font-family: var(--font-mono); font-size: 10px;
+      letter-spacing: 1.5px; text-transform: uppercase;
+      border: 1px solid var(--green); color: var(--green);
+      padding: 9px 20px;
+      transition: background 0.2s, color 0.2s;
+    }
+    .nav-cta:hover { background: var(--green); color: var(--black); }
+
+    /* ═══════════════════════════════════════
+       HERO
+    ═══════════════════════════════════════ */
+    #hero {
+      min-height: 100vh;
+      display: flex; align-items: center;
+      padding: 120px 0 80px;
+      position: relative; overflow: hidden;
+    }
+    .hero-glow {
+      position: absolute; top: -20%; left: 50%;
+      transform: translateX(-50%);
+      width: 700px; height: 700px;
+      background: radial-gradient(circle, rgba(0,245,160,0.07) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-layout {
+      display: grid; grid-template-columns: 1fr 420px; gap: 80px; align-items: center;
+      position: relative; z-index: 10;
+    }
+    .hero-eyebrow {
+      display: flex; align-items: center; gap: 16px;
+      margin-bottom: 28px;
+    }
+    .hero-eyebrow-tag {
+      font-family: var(--font-mono); font-size: 9px;
+      letter-spacing: 2px; text-transform: uppercase;
+      color: var(--green); border: 1px solid var(--green-border);
+      padding: 5px 12px;
+    }
+    .hero-eyebrow-loc {
+      font-family: var(--font-mono); font-size: 9px;
+      letter-spacing: 1.5px; color: var(--gray);
+      text-transform: uppercase;
+    }
+    h1 {
+      font-family: var(--font-display);
+      font-size: clamp(64px, 8vw, 108px);
+      font-weight: 900;
+      line-height: 0.92;
+      letter-spacing: -1px;
+      text-transform: uppercase;
+      margin-bottom: 28px;
+    }
+    h1 .accent { color: var(--green); display: block; }
+    h1 .stroke {
+      -webkit-text-stroke: 1px rgba(240,242,239,0.3);
+      color: transparent; display: block;
+    }
+    .hero-sub {
+      font-size: 16px; color: rgba(240,242,239,0.55);
+      line-height: 1.8; max-width: 460px;
+      font-weight: 300;
+      margin-bottom: 40px;
+    }
+    .hero-actions { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+    .btn-primary {
+      font-family: var(--font-mono); font-size: 11px;
+      letter-spacing: 2px; text-transform: uppercase;
+      background: var(--green); color: var(--black);
+      padding: 16px 32px; font-weight: 700;
+      transition: opacity 0.2s, transform 0.2s;
+      display: inline-flex; align-items: center; gap: 10px;
+    }
+    .btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
+    .btn-ghost {
+      font-family: var(--font-mono); font-size: 11px;
+      letter-spacing: 2px; text-transform: uppercase;
+      color: var(--gray); border-bottom: 1px solid var(--gray2);
+      padding-bottom: 2px;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .btn-ghost:hover { color: var(--white); border-color: var(--white); }
+
+    /* Score card */
+    .score-card {
+      background: var(--black2);
+      border: 1px solid var(--gray2);
+      padding: 28px;
+      position: relative;
+    }
+    .score-card-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 24px;
+    }
+    .score-card-title {
+      font-family: var(--font-mono); font-size: 9px;
+      letter-spacing: 2px; color: var(--green); text-transform: uppercase;
+    }
+    .score-card-badge {
+      font-family: var(--font-mono); font-size: 8px;
+      letter-spacing: 1px; color: var(--green);
+      border: 1px solid var(--green-border);
+      padding: 3px 8px; text-transform: uppercase;
+    }
+    .score-label {
+      font-family: var(--font-mono); font-size: 9px;
+      letter-spacing: 1px; color: var(--gray);
+      text-transform: uppercase; margin-bottom: 20px;
+    }
+    .score-row { margin-bottom: 14px; }
+    .score-row-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 6px;
+    }
+    .score-row-name {
+      font-family: var(--font-mono); font-size: 10px;
+      letter-spacing: 1px; text-transform: uppercase;
+    }
+    .score-row-val {
+      font-family: var(--font-mono); font-size: 10px;
+      color: var(--green); font-weight: 700;
+    }
+    .score-bar {
+      height: 4px; background: var(--black3);
+      position: relative; overflow: hidden;
+    }
+    .score-fill {
+      height: 100%; background: var(--green);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .score-fill.animate { transform: scaleX(1); }
+
+    .score-divider { height: 1px; background: var(--gray2); margin: 20px 0; }
+
+    .score-desc {
+      font-size: 11px; color: rgba(240,242,239,0.4);
+      line-height: 1.7; font-family: var(--font-mono);
+      letter-spacing: 0.3px;
+    }
+    .score-desc span { color: var(--green); }
+
+    /* ═══════════════════════════════════════
+       TICKER
+    ═══════════════════════════════════════ */
+    .ticker-wrap {
+      border-top: 1px solid var(--gray2);
+      border-bottom: 1px solid var(--gray2);
+      overflow: hidden; padding: 12px 0;
+      background: var(--black2);
+      position: relative; z-index: 10;
+    }
+    .ticker-track {
+      display: flex; gap: 0;
+      animation: ticker 30s linear infinite;
+      white-space: nowrap;
+    }
+    .ticker-track:hover { animation-play-state: paused; }
+    .ticker-item {
+      display: flex; align-items: center; gap: 20px;
+      padding: 0 24px;
+      font-family: var(--font-mono); font-size: 10px;
+      letter-spacing: 1.5px; text-transform: uppercase;
+      color: var(--gray);
+    }
+    .ticker-item .sep {
+      width: 4px; height: 4px;
+      background: var(--green); border-radius: 50%; flex-shrink: 0;
+    }
+    .ticker-item.highlight { color: var(--green); }
+    @keyframes ticker {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+
+    /* ═══════════════════════════════════════
+       PROBLEM SECTION
+    ═══════════════════════════════════════ */
+    #problem { padding: 120px 0; position: relative; }
+    .problem-layout {
+      display: grid; grid-template-columns: 380px 1fr; gap: 100px; align-items: start;
+    }
+    .problem-left { position: sticky; top: 100px; }
+    .problem-number {
+      font-family: var(--font-display);
+      font-size: 180px; font-weight: 900;
+      line-height: 0.85;
+      -webkit-text-stroke: 1px var(--gray2);
+      color: transparent;
+      margin-bottom: -20px;
+      display: block;
+    }
+    h2 {
+      font-family: var(--font-display);
+      font-size: clamp(38px, 5vw, 58px);
+      font-weight: 900;
+      line-height: 1.0;
+      letter-spacing: -0.5px;
+      text-transform: uppercase;
+    }
+    h2 .g { color: var(--green); }
+    .section-sub {
+      font-size: 15px; color: rgba(240,242,239,0.5);
+      line-height: 1.8; font-weight: 300;
+      margin-top: 16px;
+    }
+
+    .problem-list { display: flex; flex-direction: column; gap: 0; }
+    .problem-item {
+      padding: 32px 0;
+      border-bottom: 1px solid var(--gray2);
+      display: grid; grid-template-columns: 48px 1fr; gap: 24px; align-items: start;
+      opacity: 0; transform: translateY(24px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .problem-item.visible { opacity: 1; transform: translateY(0); }
+    .problem-item-num {
+      font-family: var(--font-mono); font-size: 10px;
+      color: var(--green); letter-spacing: 1px;
+      padding-top: 4px;
+    }
+    .problem-item h3 {
+      font-family: var(--font-display);
+      font-size: 22px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.5px;
+      margin-bottom: 10px;
+    }
+    .problem-item p {
+      font-size: 14px; color: rgba(240,242,239,0.5);
+      line-height: 1.75; font-weight: 300;
+    }
+    .problem-item .stat {
+      display: inline-flex; align-items: center; gap: 8px;
+      margin-top: 14px;
+      font-family: var(--font-mono); font-size: 11px;
+      color: var(--green); letter-spacing: 1px;
+    }
+    .problem-item .stat::before {
+      content: '▸'; font-size: 8px;
+    }
+
+    /* ═══════════════════════════════════════
+       PHILOSOPHY
+    ═══════════════════════════════════════ */
+    #philosophy {
+      padding: 120px 0;
+      background: var(--black2);
+      border-top: 1px solid var(--gray2);
+      border-bottom: 1px solid var(--gray2);
+      position: relative; overflow: hidden;
+    }
+    .phil-glow {
+      position: absolute; bottom: -30%; right: -10%;
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(0,245,160,0.05) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .phil-layout {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center;
+    }
+    .phil-statement {
+      font-family: var(--font-display);
+      font-size: clamp(42px, 5vw, 64px);
+      font-weight: 900; line-height: 0.95;
+      text-transform: uppercase; letter-spacing: -0.5px;
+    }
+    .phil-statement .line2 { color: var(--green); }
+    .phil-statement .line3 {
+      -webkit-text-stroke: 1px rgba(240,242,239,0.25);
+      color: transparent;
+    }
+
+    .phil-pillars { display: flex; flex-direction: column; gap: 0; }
+    .pillar {
+      padding: 28px 0; border-bottom: 1px solid var(--gray2);
+      display: grid; grid-template-columns: 28px 1fr; gap: 20px;
+      opacity: 0; transform: translateX(20px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+    .pillar.visible { opacity: 1; transform: translateX(0); }
+    .pillar-icon {
+      width: 20px; height: 20px; margin-top: 3px;
+      border: 1px solid var(--green-border);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .pillar-icon svg { width: 10px; height: 10px; }
+    .pillar h4 {
+      font-family: var(--font-mono); font-size: 11px;
+      letter-spacing: 1.5px; color: var(--green);
+      text-transform: uppercase; margin-bottom: 8px;
+    }
+    .pillar p {
+      font-size: 13px; color: rgba(240,242,239,0.5);
+      line-height: 1.75; font-weight: 300;
+    }
+
+    /* ═══════════════════════════════════════
+       AUDIT AREAS
+    ═══════════════════════════════════════ */
+    #audit-areas { padding: 120px 0; position: relative; }
+    .areas-header { margin-bottom: 64px; }
+    .areas-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px;
+      background: var(--gray2);
+      border: 1px solid var(--gray2);
+    }
+    .area-card {
+      background: var(--black);
+      padding: 32px;
+      position: relative; overflow: hidden;
+      transition: background 0.3s;
+    }
+    .area-card:hover { background: var(--black3); }
+    .area-card::before {
+      content: '';
+      position: absolute; bottom: 0; left: 0; right: 0;
+      height: 2px; background: var(--green);
+      transform: scaleX(0); transform-origin: left;
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .area-card:hover::before { transform: scaleX(1); }
+    .area-num {
+      font-family: var(--font-mono); font-size: 9px;
+      letter-spacing: 2px; color: var(--green);
+      text-transform: uppercase; margin-bottom: 20px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .area-num::after {
+      content: ''; flex: 1; height: 1px; background: var(--gray2);
+    }
+    .area-card h3 {
+      font-family: var(--font-display);
+      font-size: 20px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.5px;
+      margin-bottom: 12px; line-height: 1.1;
+    }
+    .area-card p {
+      font-size: 13px; color: rgba(240,242,239,0.45);
+      line-height: 1.75; font-weight: 300;
+    }
+    .area-deliverable {
+      margin-top: 20px; padding-top: 16px;
+      border-top: 1px solid var(--gray2);
+      font-family: var(--font-mono); font-size: 10px;
+      color: var(--green); letter-spacing: 0.5px;
+      line-height: 1.6;
+    }
+    .area-deliverable::before {
+      content: '→ '; opacity: 0.6;
+    }
+    .area-card.span2 { grid-column: span 2; }
+
+    /* ═══════════════════════════════════════
+       HOW IT WORKS
+    ═══════════════════════════════════════ */
+    #how {
+      padding: 120px 0;
+      background: var(--black2);
+      border-top: 1px solid var(--gray2);
+    }
+    .how-layout {
+      display: grid; grid-template-columns: 340px 1fr; gap: 100px; align-items: start;
+    }
+    .how-left { position: sticky; top: 100px; }
+    .how-steps { display: flex; flex-direction: column; gap: 0; }
+    .how-step {
+      display: grid; grid-template-columns: 80px 1fr; gap: 32px;
+      padding: 40px 0; border-bottom: 1px solid var(--gray2);
+      align-items: start;
+      opacity: 0; transform: translateY(20px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+    .how-step.visible { opacity: 1; transform: translateY(0); }
+    .how-step-num {
+      font-family: var(--font-display);
+      font-size: 64px; font-weight: 900;
+      color: transparent;
+      -webkit-text-stroke: 1px var(--green);
+      line-height: 1;
+    }
+    .how-step h3 {
+      font-family: var(--font-display);
+      font-size: 22px; font-weight: 700;
+      text-transform: uppercase; margin-bottom: 12px;
+    }
+    .how-step p {
+      font-size: 14px; color: rgba(240,242,239,0.5);
+      line-height: 1.8; font-weight: 300;
+    }
+    .how-step .note {
+      margin-top: 12px;
+      font-family: var(--font-mono); font-size: 10px;
+      color: var(--green); letter-spacing: 0.5px;
+    }
+
+    /* ═══════════════════════════════════════
+       WHO
+    ═══════════════════════════════════════ */
+    #who { padding: 120px 0; }
+    .who-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+      margin-top: 64px;
+    }
+    .who-card {
+      border: 1px solid var(--gray2); padding: 28px;
+      position: relative;
+      transition: border-color 0.3s, transform 0.3s;
+    }
+    .who-card:hover {
+      border-color: var(--green-border);
+      transform: translateY(-4px);
+    }
+    .who-card .bracket { width: 12px; height: 12px; }
+    .who-card .bracket::before, .who-card .bracket::after {
+      background: var(--green); opacity: 0.4;
+      transition: opacity 0.3s;
+    }
+    .who-card:hover .bracket::before,
+    .who-card:hover .bracket::after { opacity: 1; }
+    .who-card h4 {
+      font-family: var(--font-display);
+      font-size: 16px; font-weight: 700;
+      text-transform: uppercase; margin: 16px 0 10px;
+    }
+    .who-card p {
+      font-size: 13px; color: rgba(240,242,239,0.45);
+      line-height: 1.7; font-weight: 300;
+    }
+
+    /* ═══════════════════════════════════════
+       CTA SECTION
+    ═══════════════════════════════════════ */
+    #cta {
+      padding: 140px 0;
+      border-top: 1px solid var(--gray2);
+      position: relative; overflow: hidden;
+    }
+    .cta-glow {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 800px; height: 400px;
+      background: radial-gradient(ellipse, rgba(0,245,160,0.06) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .cta-inner {
+      position: relative; z-index: 10;
+      text-align: center;
+    }
+    .cta-inner .tag { justify-content: center; margin-bottom: 24px; }
+    .cta-headline {
+      font-family: var(--font-display);
+      font-size: clamp(52px, 8vw, 96px);
+      font-weight: 900; line-height: 0.9;
+      text-transform: uppercase; letter-spacing: -1px;
+      margin-bottom: 28px;
+    }
+    .cta-headline .g { color: var(--green); }
+    .cta-sub {
+      font-size: 15px; color: rgba(240,242,239,0.45);
+      line-height: 1.8; font-weight: 300;
+      max-width: 480px; margin: 0 auto 48px;
+    }
+    .cta-actions {
+      display: flex; align-items: center; justify-content: center;
+      gap: 24px; flex-wrap: wrap; margin-bottom: 40px;
+    }
+    .cta-note {
+      font-family: var(--font-mono); font-size: 10px;
+      color: var(--gray); letter-spacing: 1px; text-transform: uppercase;
+    }
+    .cta-note span { color: var(--green); }
+
+    /* ═══════════════════════════════════════
+       FOOTER
+    ═══════════════════════════════════════ */
+    footer {
+      border-top: 1px solid var(--gray2);
+      padding: 28px 0;
+      background: var(--black2);
+    }
+    .footer-inner {
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .footer-logo {
+      font-family: var(--font-mono); font-size: 11px;
+      letter-spacing: 1px;
+    }
+    .footer-logo .dot { color: var(--green); }
+    .footer-right {
+      display: flex; align-items: center; gap: 32px;
+    }
+    .footer-link {
+      font-family: var(--font-mono); font-size: 9px;
+      letter-spacing: 1.5px; color: var(--gray);
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .footer-link:hover { color: var(--white); }
+    .footer-copy {
+      font-family: var(--font-mono); font-size: 9px;
+      color: var(--gray2); letter-spacing: 1px;
+    }
+
+    /* ═══════════════════════════════════════
+       ANIMATIONS
+    ═══════════════════════════════════════ */
+    .fade-up {
+      opacity: 0; transform: translateY(32px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .fade-up.visible { opacity: 1; transform: translateY(0); }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; } 50% { opacity: 0; }
+    }
+    .blink { animation: blink 1.2s ease infinite; }
+
+    @keyframes pulse-border {
+      0%,100% { border-color: var(--green-border); }
+      50%      { border-color: var(--green); }
+    }
+
+    /* ═══════════════════════════════════════
+       RESPONSIVE
+    ═══════════════════════════════════════ */
+    @media (max-width: 960px) {
+      .container { padding: 0 24px; }
+      nav .container { padding: 0 24px; }
+      .hero-layout { grid-template-columns: 1fr; }
+      .score-card { display: none; }
+      .problem-layout { grid-template-columns: 1fr; }
+      .problem-left { position: static; }
+      .problem-number { font-size: 100px; }
+      .phil-layout { grid-template-columns: 1fr; }
+      .how-layout { grid-template-columns: 1fr; }
+      .how-left { position: static; }
+      .areas-grid { grid-template-columns: 1fr; }
+      .area-card.span2 { grid-column: span 1; }
+      .who-grid { grid-template-columns: 1fr 1fr; }
+      .nav-right .nav-link { display: none; }
+    }
+    @media (max-width: 600px) {
+      .who-grid { grid-template-columns: 1fr; }
+      h1 { font-size: 54px; }
+      .cta-headline { font-size: 48px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Cursor -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursor-ring"></div>
+<div class="scanline"></div>
+
+<!-- NAV ─────────────────────────────────── -->
+<nav>
+  <div class="container">
+    <div class="nav-inner">
+      <a href="#hero" class="nav-logo">
+        QUBIT<span class="dot">_</span>ONE
+        <span class="sub">Automation Architecture</span>
+      </a>
+      <div class="nav-right">
+        <a href="#problem"    class="nav-link">Problem</a>
+        <a href="#philosophy" class="nav-link">Standard</a>
+        <a href="#audit-areas" class="nav-link">Audit</a>
+        <a href="#cta"        class="nav-cta">Free Audit →</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO ────────────────────────────────── -->
+<section id="hero">
+  <div class="grid-bg"></div>
+  <div class="hero-glow"></div>
+  <div class="container">
+    <div class="hero-layout">
+      <div>
+        <div class="hero-eyebrow">
+          <span class="hero-eyebrow-tag">Process Audit &amp; Automation Systems</span>
+          <span class="hero-eyebrow-loc">// Austin, TX</span>
+        </div>
+        <h1>
+          <span>You're</span>
+          <span>automating</span>
+          <span class="accent">the wrong</span>
+          <span class="stroke">things.</span>
+        </h1>
+        <p class="hero-sub">
+          We help founders identify the $10k–$100k processes worth automating —
+          then build systems that run at high fidelity standards or not at all.
+        </p>
+        <div class="hero-actions">
+          <a href="#cta" class="btn-primary">
+            <span>Claim Free Audit</span>
+            <span>→</span>
+          </a>
+          <a href="#philosophy" class="btn-ghost">Our Standard</a>
+        </div>
+      </div>
+
+      <!-- Score Card -->
+      <div class="score-card">
+        <div class="bracket tl"></div>
+        <div class="bracket tr"></div>
+        <div class="bracket bl"></div>
+        <div class="bracket br"></div>
+        <div class="score-card-header">
+          <span class="score-card-title">4-Variable Scoring Method</span>
+          <span class="score-card-badge">Proprietary</span>
+        </div>
+        <p class="score-label">How we rank processes worth automating</p>
+        <div class="score-row">
+          <div class="score-row-header">
+            <span class="score-row-name">Time Recovery</span>
+            <span class="score-row-val">40%</span>
+          </div>
+          <div class="score-bar">
+            <div class="score-fill" style="width:40%" data-width="40%"></div>
+          </div>
+        </div>
+        <div class="score-row">
+          <div class="score-row-header">
+            <span class="score-row-name">Error Reduction</span>
+            <span class="score-row-val">25%</span>
+          </div>
+          <div class="score-bar">
+            <div class="score-fill" style="width:25%" data-width="25%"></div>
+          </div>
+        </div>
+        <div class="score-row">
+          <div class="score-row-header">
+            <span class="score-row-name">Build Complexity</span>
+            <span class="score-row-val">20%</span>
+          </div>
+          <div class="score-bar">
+            <div class="score-fill" style="width:20%" data-width="20%"></div>
+          </div>
+        </div>
+        <div class="score-row">
+          <div class="score-row-header">
+            <span class="score-row-name">Leverage Multiplier</span>
+            <span class="score-row-val">15%</span>
+          </div>
+          <div class="score-bar">
+            <div class="score-fill" style="width:15%" data-width="15%"></div>
+          </div>
+        </div>
+        <div class="score-divider"></div>
+        <p class="score-desc">
+          4 variables. Weighted. Ranked.<br/>
+          Every process we audit gets scored before we build a single node.
+          <span> No guesswork. No wasted builds.</span>
+        </p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- TICKER ──────────────────────────────── -->
+<div class="ticker-wrap">
+  <div class="ticker-track" id="ticker">
+    <span class="ticker-item"><span class="sep"></span>Fault Tolerance Baked In From Day One</span>
+    <span class="ticker-item highlight"><span class="sep"></span>High Fidelity. Or Nothing.</span>
+    <span class="ticker-item"><span class="sep"></span>4-Variable Workflow Scoring</span>
+    <span class="ticker-item"><span class="sep"></span>$10k–$100k Processes Identified</span>
+    <span class="ticker-item highlight"><span class="sep"></span>Your Competitor Automated This 6 Months Ago</span>
+    <span class="ticker-item"><span class="sep"></span>Process Audit &amp; Automation Systems</span>
+    <span class="ticker-item"><span class="sep"></span>Observability Built In</span>
+    <span class="ticker-item highlight"><span class="sep"></span>Free 30-Min Audit This Month</span>
+    <!-- duplicate for seamless loop -->
+    <span class="ticker-item"><span class="sep"></span>Fault Tolerance Baked In From Day One</span>
+    <span class="ticker-item highlight"><span class="sep"></span>High Fidelity. Or Nothing.</span>
+    <span class="ticker-item"><span class="sep"></span>4-Variable Workflow Scoring</span>
+    <span class="ticker-item"><span class="sep"></span>$10k–$100k Processes Identified</span>
+    <span class="ticker-item highlight"><span class="sep"></span>Your Competitor Automated This 6 Months Ago</span>
+    <span class="ticker-item"><span class="sep"></span>Process Audit &amp; Automation Systems</span>
+    <span class="ticker-item"><span class="sep"></span>Observability Built In</span>
+    <span class="ticker-item highlight"><span class="sep"></span>Free 30-Min Audit This Month</span>
+  </div>
+</div>
+
+<!-- PROBLEM ─────────────────────────────── -->
+<section id="problem">
+  <div class="container">
+    <div class="problem-layout">
+      <div class="problem-left fade-up">
+        <span class="problem-number">03</span>
+        <h2>The reasons<br/>automation<br/><span class="g">fails.</span></h2>
+        <p class="section-sub">
+          Most automation breaks within 30 days. Not because automation doesn't work —
+          because it was built without standards.
+        </p>
+      </div>
+      <div class="problem-list">
+        <div class="problem-item">
+          <span class="problem-item-num">01</span>
+          <div>
+            <h3>You're automating the wrong processes</h3>
+            <p>
+              Most founders automate what's visible, not what's valuable.
+              A workflow that saves 20 minutes on a task you do once a week
+              is not an automation — it's a distraction from the process that's costing you $40k a year.
+            </p>
+            <span class="stat">Qubit_One scores every process before touching n8n</span>
+          </div>
+        </div>
+        <div class="problem-item">
+          <span class="problem-item-num">02</span>
+          <div>
+            <h3>No error handling. No fallbacks.</h3>
+            <p>
+              It runs until it doesn't, and nobody notices until a lead disappears or an invoice never sends.
+              Automation without fault tolerance is just a faster way to fail silently.
+            </p>
+            <span class="stat">Every workflow ships with fault tolerance from day one</span>
+          </div>
+        </div>
+        <div class="problem-item">
+          <span class="problem-item-num">03</span>
+          <div>
+            <h3>Zero observability after deployment</h3>
+            <p>
+              You built it, you launched it, you forgot about it. Six weeks later something broke
+              and the damage was already done. If you can't see your automation running,
+              you don't actually control it.
+            </p>
+            <span class="stat">You know when something needs attention — before it becomes a problem</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PHILOSOPHY ──────────────────────────── -->
+<section id="philosophy">
+  <div class="phil-glow"></div>
+  <div class="container">
+    <div class="phil-layout">
+      <div class="fade-up">
+        <div class="tag" style="margin-bottom:20px">The Qubit_One Standard</div>
+        <div class="phil-statement">
+          <span class="line1">High</span><br/>
+          <span class="line2">fidelity.</span><br/>
+          <span class="line3">Or nothing.</span>
+        </div>
+        <p class="section-sub" style="margin-top:24px">
+          We don't move fast and break things.<br/>
+          We move precisely — and hold.
+        </p>
+      </div>
+      <div class="phil-pillars">
+        <div class="pillar">
+          <div class="pillar-icon">
+            <svg viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M5 1v8M1 5h8" stroke="#00F5A0" stroke-width="1.2" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div>
+            <h4>Fault Tolerance</h4>
+            <p>It handles the unexpected without breaking. Every edge case is accounted for before a single workflow goes live. We build for the scenario you haven't thought of yet.</p>
+          </div>
+        </div>
+        <div class="pillar">
+          <div class="pillar-icon">
+            <svg viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="5" cy="5" r="3" stroke="#00F5A0" stroke-width="1.2"/>
+              <circle cx="5" cy="5" r="1" fill="#00F5A0"/>
+            </svg>
+          </div>
+          <div>
+            <h4>Observability</h4>
+            <p>You know when something needs attention before it becomes a problem. Every system we deploy comes with monitoring so you're never flying blind after launch.</p>
+          </div>
+        </div>
+        <div class="pillar">
+          <div class="pillar-icon">
+            <svg viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M2 5l2 2 4-4" stroke="#00F5A0" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div>
+            <h4>Precision</h4>
+            <p>Every trigger, every action, every output is intentional. Nothing in a Qubit_One system exists by accident. If it doesn't have a reason, it doesn't ship.</p>
+          </div>
+        </div>
+        <div class="pillar">
+          <div class="pillar-icon">
+            <svg viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="1.5" y="1.5" width="7" height="7" stroke="#00F5A0" stroke-width="1.2"/>
+              <path d="M3.5 5h3" stroke="#00F5A0" stroke-width="1.2" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div>
+            <h4>Scored First, Built Second</h4>
+            <p>We run every candidate process through our 4-variable scoring model before writing a single node. If it doesn't score high enough to justify the build, we tell you — and find one that does.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- AUDIT AREAS ─────────────────────────── -->
+<section id="audit-areas">
+  <div class="container">
+    <div class="areas-header fade-up">
+      <div class="tag" style="margin-bottom:16px">The Free Audit</div>
+      <h2>Five areas.<br/>One written<br/><span class="g">deliverable.</span></h2>
+      <p class="section-sub" style="max-width:480px">
+        Zero obligation. You walk away with a prioritized breakdown of your top automation opportunities — specific to how your business actually runs.
+      </p>
+    </div>
+    <div class="areas-grid">
+      <div class="area-card fade-up">
+        <div class="area-num">Area 01</div>
+        <h3>Lead Capture &amp; Response Flow</h3>
+        <p>How fast does your pipeline move when a new lead arrives? We map the gap between inquiry and first human touchpoint and identify the single workflow that closes it.</p>
+        <div class="area-deliverable">Leak map + priority workflow identified</div>
+      </div>
+      <div class="area-card fade-up">
+        <div class="area-num">Area 02</div>
+        <h3>Client Onboarding Sequence</h3>
+        <p>What happens in the 72 hours after a client signs? We identify every manual step between contract and kickoff and design a triggered sequence that runs perfectly every time.</p>
+        <div class="area-deliverable">Automated onboarding flow blueprint</div>
+      </div>
+      <div class="area-card fade-up">
+        <div class="area-num">Area 03</div>
+        <h3>Reporting &amp; Client Communication</h3>
+        <p>Are your clients informed before they have to ask? We audit your reporting cycle and design an automated delivery system for your specific data sources and client base.</p>
+        <div class="area-deliverable">Reporting automation blueprint</div>
+      </div>
+      <div class="area-card fade-up">
+        <div class="area-num">Area 04</div>
+        <h3>Internal Ops &amp; Team Handoffs</h3>
+        <p>Where does work slow down between people? We map the recurring admin and handoff friction consuming disproportionate team capacity every single week.</p>
+        <div class="area-deliverable">Top 3 internal wins — ranked by ROI</div>
+      </div>
+      <div class="area-card span2 fade-up">
+        <div class="area-num">Area 05</div>
+        <h3>Post-Delivery &amp; Retention Triggers</h3>
+        <p>What happens in the 30 days after you deliver the work? The referral prompts, review requests, check-ins, and renewal conversations that should be running automatically — and almost never are. This is where most agencies leave the most money on the table.</p>
+        <div class="area-deliverable">Post-delivery sequence + retention automation map</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS ────────────────────────── -->
+<section id="how">
+  <div class="container">
+    <div class="how-layout">
+      <div class="how-left fade-up">
+        <div class="tag" style="margin-bottom:16px">Process</div>
+        <h2>Three steps.<br/>One clean<br/><span class="g">output.</span></h2>
+        <p class="section-sub">
+          No pitch decks. No hidden proposals. Just a structured diagnostic and a written deliverable you keep.
+        </p>
+      </div>
+      <div class="how-steps">
+        <div class="how-step">
+          <div class="how-step-num">01</div>
+          <div>
+            <h3>20-Minute Discovery Call</h3>
+            <p>We talk through how your operation currently runs — your tools, your client lifecycle, your team structure, and where you feel the most friction. No prep needed. Bring your honest answers.</p>
+            <div class="note">// No prep required — just your honest answers</div>
+          </div>
+        </div>
+        <div class="how-step">
+          <div class="how-step-num">02</div>
+          <div>
+            <h3>Audit &amp; Scoring</h3>
+            <p>We run your processes through our 4-variable scoring model: Time Recovery, Error Reduction, Build Complexity, Leverage Multiplier. What scores high, gets built. What doesn't, gets dismissed — and we tell you why.</p>
+            <div class="note">// Scored before a single node gets built</div>
+          </div>
+        </div>
+        <div class="how-step">
+          <div class="how-step-num">03</div>
+          <div>
+            <h3>Written Breakdown — Yours to Keep</h3>
+            <p>You receive a clear, prioritized written report: your top automation opportunities, their scores, what each one looks like in n8n, and the recommended starting point. The document is yours regardless of what you decide to do next.</p>
+            <div class="note">// No obligation — the deliverable has value either way</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHO ─────────────────────────────────── -->
+<section id="who">
+  <div class="container">
+    <div class="fade-up">
+      <div class="tag" style="margin-bottom:16px">Who It's For</div>
+      <h2>Built for<br/><span class="g">founders</span><br/>who operate.</h2>
+      <p class="section-sub" style="max-width:480px">
+        Not for enterprises with ops teams. For founders who are still in the work and feel the friction daily.
+      </p>
+    </div>
+    <div class="who-grid">
+      <div class="who-card">
+        <div class="bracket tl"></div><div class="bracket tr"></div>
+        <div class="bracket bl"></div><div class="bracket br"></div>
+        <h4>Marketing &amp; B2B Agencies</h4>
+        <p>Pipeline automation, CRM sync, outbound sequences, and client reporting that builds itself.</p>
+      </div>
+      <div class="who-card">
+        <div class="bracket tl"></div><div class="bracket tr"></div>
+        <div class="bracket bl"></div><div class="bracket br"></div>
+        <h4>Design &amp; Creative Studios</h4>
+        <p>Intake unification, project triggers, revision workflows, and post-delivery sequences.</p>
+      </div>
+      <div class="who-card">
+        <div class="bracket tl"></div><div class="bracket tr"></div>
+        <div class="bracket bl"></div><div class="bracket br"></div>
+        <h4>Performance Marketing</h4>
+        <p>Cross-platform data pipelines, live alert systems, budget monitors, and automated client reporting.</p>
+      </div>
+      <div class="who-card">
+        <div class="bracket tl"></div><div class="bracket tr"></div>
+        <div class="bracket bl"></div><div class="bracket br"></div>
+        <h4>Commerce Marketing</h4>
+        <p>Shopify × Klaviyo × Meta orchestration — the cross-platform logic native tools can't handle.</p>
+      </div>
+      <div class="who-card">
+        <div class="bracket tl"></div><div class="bracket tr"></div>
+        <div class="bracket bl"></div><div class="bracket br"></div>
+        <h4>SaaS &amp; Product Companies</h4>
+        <p>Onboarding automation, churn signals, support routing, and internal ops for lean product teams.</p>
+      </div>
+      <div class="who-card">
+        <div class="bracket tl"></div><div class="bracket tr"></div>
+        <div class="bracket bl"></div><div class="bracket br"></div>
+        <h4>Solo Founders Scaling</h4>
+        <p>If you're doing the work of three people, automation is the only hire that doesn't need a contract.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA ─────────────────────────────────── -->
+<section id="cta">
+  <div class="cta-glow"></div>
+  <div class="container">
+    <div class="cta-inner">
+      <div class="tag">Free Audit — Limited Spots</div>
+      <div class="cta-headline">
+        <div>Your competitor</div>
+        <div class="g">automated this</div>
+        <div>6 months ago.</div>
+      </div>
+      <p class="cta-sub">
+        Every week you wait is a week they're pulling ahead.
+        The audit is free, the deliverable is yours, and the first workflow we identify could pay for itself in the first week.
+      </p>
+      <div class="cta-actions">
+        <a href="mailto:youremail@qubitone.com" class="btn-primary">
+          <span>DM Audit — Start Now</span>
+          <span>→</span>
+        </a>
+      </div>
+      <p class="cta-note">
+        30 minutes. Written output. <span>Zero obligation.</span>
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER ──────────────────────────────── -->
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <span class="footer-logo">QUBIT<span class="dot">_</span>ONE</span>
+      <div class="footer-right">
+        <a href="#problem"     class="footer-link">Problem</a>
+        <a href="#philosophy"  class="footer-link">Standard</a>
+        <a href="#audit-areas" class="footer-link">Audit</a>
+        <a href="#cta"         class="footer-link">Contact</a>
+      </div>
+      <span class="footer-copy">© 2025 Qubit_One — Austin, TX</span>
+    </div>
+  </div>
+</footer>
+
+<!-- ═══════════════════════════════════════
+     JAVASCRIPT
+═══════════════════════════════════════ -->
+<script>
+  /* ── Custom Cursor ─────────────── */
+  const cur  = document.getElementById('cursor');
+  const ring = document.getElementById('cursor-ring');
+  let mx = -100, my = -100, rx = -100, ry = -100;
+  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+  const hoverEls = document.querySelectorAll('a, button, .area-card, .who-card');
+  hoverEls.forEach(el => {
+    el.addEventListener('mouseenter', () => { cur.classList.add('hover'); ring.classList.add('hover'); });
+    el.addEventListener('mouseleave', () => { cur.classList.remove('hover'); ring.classList.remove('hover'); });
+  });
+  function animCursor() {
+    cur.style.left  = mx + 'px';
+    cur.style.top   = my + 'px';
+    rx += (mx - rx) * 0.14;
+    ry += (my - ry) * 0.14;
+    ring.style.left = rx + 'px';
+    ring.style.top  = ry + 'px';
+    requestAnimationFrame(animCursor);
+  }
+  animCursor();
+
+  /* ── Score Bar Animation ────────── */
+  const bars = document.querySelectorAll('.score-fill');
+  const scoreCard = document.querySelector('.score-card');
+  if (scoreCard) {
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          bars.forEach(b => b.classList.add('animate'));
+          obs.disconnect();
+        }
+      });
+    }, { threshold: 0.5 });
+    obs.observe(scoreCard);
+  }
+
+  /* ── Scroll Reveal ──────────────── */
+  const revealEls = document.querySelectorAll(
+    '.fade-up, .problem-item, .pillar, .how-step'
+  );
+  const revealObs = new IntersectionObserver(entries => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        const delay = e.target.dataset.delay || 0;
+        setTimeout(() => e.target.classList.add('visible'), delay);
+        revealObs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.15 });
+
+  revealEls.forEach((el, i) => {
+    const siblings = [...el.parentElement.children].filter(c =>
+      c.classList.contains(el.classList[0])
+    );
+    const idx = siblings.indexOf(el);
+    el.dataset.delay = idx * 120;
+    revealObs.observe(el);
+  });
+
+  /* ── Active Nav Link ────────────── */
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks  = document.querySelectorAll('.nav-link');
+  window.addEventListener('scroll', () => {
+    let cur = '';
+    sections.forEach(s => {
+      if (window.scrollY >= s.offsetTop - 120) cur = s.id;
+    });
+    navLinks.forEach(l => {
+      l.style.color = l.getAttribute('href') === `#${cur}`
+        ? 'var(--green)' : '';
+    });
+  }, { passive: true });
+</script>
+</body>
+</html>
